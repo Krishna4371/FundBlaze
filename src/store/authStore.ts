@@ -65,7 +65,20 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'fb-auth',
-      partialize: (state) => ({ user: state.user, isAuthenticated: state.isAuthenticated }),
+      partialize: (state) => ({
+        user: state.user,
+        isAuthenticated: state.isAuthenticated,
+        accessToken: state.accessToken,
+      }),
+      // On rehydration: if there's no token, clear auth state
+      // This prevents stale "logged in" state from a previous session
+      onRehydrateStorage: () => (state) => {
+        if (state && !state.accessToken) {
+          state.isAuthenticated = false
+          state.user = null
+          state.accessToken = null
+        }
+      },
     }
   )
 )
