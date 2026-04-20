@@ -284,7 +284,10 @@ async function mockAdapter(config: InternalAxiosRequestConfig): Promise<AxiosRes
 
   if (method === 'get' && url.includes('donations/my')) {
     const loggedInUser = resolveUserWithOverrides(config)
-    const myDonations = donations.filter(d => d.userId === loggedInUser.id)
+    const myDonations = donations.filter(d => 
+      d.userId === loggedInUser.id || 
+      (d.donorName && d.donorName === loggedInUser.name)
+    )
     return ok({ data: myDonations, total: myDonations.length, page: 1, limit: 50, totalPages: 1 }, config)
   }
 
@@ -452,22 +455,66 @@ async function mockAdapter(config: InternalAxiosRequestConfig): Promise<AxiosRes
     return ok({ message: 'Campaign deleted' }, config)
   }
 
+  // Temporary mock storage for orders pending verification
+  const mockOrders: Record<string, { campaignId: string, amount: number }> = (window as any).__mockOrders || ((window as any).__mockOrders = {})
+
   // ── POST /payments/razorpay/order ────────────────────────────────────────
   if (method === 'post' && url.includes('payments/razorpay/order')) {
     const body = config.data ? JSON.parse(config.data) : {}
     const amount = Number(body.amount) || 500
+    const campaignId = body.campaignId || ''
+    const orderId = `order_mock_${Date.now()}`
+    
+    mockOrders[orderId] = { campaignId, amount }
+
     // Return a fake Razorpay order — enough for the checkout to open in test mode
     return ok({
-      orderId:    `order_mock_${Date.now()}`,
+      orderId,
       donationId: `don_mock_${Date.now()}`,
       amount,
       currency:   'INR',
     }, config)
   }
 
-  // ── POST /payments/razorpay/verify ────────────────────────────────────────
   if (method === 'post' && url.includes('payments/razorpay/verify')) {
-    // In mock mode, always treat the payment as verified successfully
+    // In mock mode, simulate what the backend does: create the donation and update campaign stats
+    const loggedInUser = resolveUserWithOverrides(config)
+    
+    // Look up the order details that were created previously
+    const orderId = body.razorpay_order_id || ''
+    const orderDetails = mockOrders[orderId] || { campaignId: '', amount: 500 }
+    const { campaignId, amount } = orderDetails
+
+    const campaignIndex = campaigns.findIndex(c => c.id === campaignId || c.slug === campaignId)
+    
+    const campaignTitle = campaignIndex !== -1 ? campaigns[campaignIndex].title : 'Campaign'
+    if (campaignIndex !== -1) {
+      campaigns[campaignIndex] = {
+        ...campaigns[campaignIndex],
+        raisedAmount: campaigns[campaignIndex].raisedAmount + amount,
+        donorCount: campaigns[campaignIndex].donorCount + 1,
+        updatedAt: new Date().toISOString(),
+      }
+    }
+
+    const newDonation = {
+      id: 'don-' + Date.now(),
+      campaignId,
+      campaignTitle,
+      donorName: body.anonymous ? undefined : loggedInUser.name,
+      donorAvatar: body.anonymous ? undefined : loggedInUser.avatar,
+      amount,
+      message: body.message,
+      anonymous: body.anonymous || false,
+      paymentMethod: 'card',
+      status: 'completed' as const,
+      createdAt: new Date().toISOString(),
+      userId: loggedInUser.id,
+    }
+    donations.unshift(newDonation)
+    saveDonations()
+    saveCampaigns()
+
     return ok({ verified: true, message: 'Payment verified (mock)' }, config)
   }
 

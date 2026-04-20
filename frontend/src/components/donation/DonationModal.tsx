@@ -118,6 +118,7 @@ export function DonationModal({ campaignId, campaignTitle, isOpen, onClose }: Do
       qc.invalidateQueries({ queryKey: ['campaigns'] })
       qc.invalidateQueries({ queryKey: ['donations', campaignId] })
       qc.invalidateQueries({ queryKey: ['my-stats'] })
+      qc.invalidateQueries({ queryKey: ['my-donations'] })
 
       setMockRzpOpen(false)
       toastSuccess(`Thank you! ${formatCurrency(finalAmount)} donated successfully.`)
