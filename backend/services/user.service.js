@@ -20,12 +20,13 @@ exports.getPublicProfile = async (usernameOrId) => {
       .select('title slug coverImage raisedAmount goalAmount donorCount status deadline category createdAt')
       .lean(),
 
-    // Aggregate total raised & total donors across this creator's campaigns
+    // Aggregate total raised & total distinct donors across this creator's campaigns
     Donation.aggregate([
       { $lookup: { from: 'campaigns', localField: 'campaign', foreignField: '_id', as: 'c' } },
       { $unwind: '$c' },
       { $match: { 'c.creator': oid, status: 'completed' } },
-      { $group: { _id: null, totalRaised: { $sum: '$amount' }, totalDonors: { $sum: 1 } } },
+      { $group: { _id: null, totalRaised: { $sum: '$amount' }, uniqueDonors: { $addToSet: '$donor' } } },
+      { $project: { totalRaised: 1, totalDonors: { $size: '$uniqueDonors' } } }
     ]),
 
     // Number of distinct campaigns this user has donated to

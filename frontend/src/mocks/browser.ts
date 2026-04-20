@@ -396,9 +396,42 @@ async function mockAdapter(config: InternalAxiosRequestConfig): Promise<AxiosRes
       u.username === usernameOrId || u.id === usernameOrId || u.email === usernameOrId
     )
     if (!found) fail('User not found', 404, config)
-    // Attach their mock campaigns
-    const userCampaigns = campaigns.filter(c => c.creator?.username === found!.username).slice(0, 6)
-    return ok({ ...found, campaigns: userCampaigns }, config)
+
+    // Find campaigns this user created
+    const userCampaigns = campaigns.filter(c => c.creator?.username === found!.username)
+    const userCampaignIds = new Set(userCampaigns.map(c => c.id))
+    
+    // Find all donations to campaigns created by this user
+    const userReceivedDonations = donations.filter(d => userCampaignIds.has(d.campaignId) && d.status === 'completed')
+    
+    // Calculate total donors (unique donors to their campaigns)
+    const uniqueDonors = new Set(userReceivedDonations.map(d => d.userId || d.donorName || 'anonymous')).size
+    
+    // Calculate total raised
+    const totalRaised = userReceivedDonations.reduce((sum, d) => sum + d.amount, 0)
+    
+    // Find campaigns this user has donated to
+    const campaignsBacked = new Set(
+      donations
+        .filter(d => d.userId === found.id && d.status === 'completed')
+        .map(d => d.campaignId)
+    ).size
+
+    // Inject computed stats into the profile
+    const profileResponse = {
+      ...found,
+      stats: {
+        totalRaised: totalRaised,
+        activeCampaigns: userCampaigns.filter(c => c.status === 'active').length,
+        totalCampaigns: userCampaigns.length,
+        totalDonors: uniqueDonors,
+        campaignsBacked: campaignsBacked,
+      },
+      // Attach their mock campaigns
+      campaigns: userCampaigns.filter(c => ['active', 'funded'].includes(c.status)).slice(0, 6)
+    }
+
+    return ok(profileResponse, config)
   }
 
   // ── DELETE campaign ───────────────────────────────────────────────────────

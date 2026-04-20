@@ -34,13 +34,17 @@ const bottomLinks = [
 ]
 
 export function Footer() {
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   return (
     <footer className="border-t border-white/8 bg-bg-deep mt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-14">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-10">
           {/* Brand */}
           <div className="md:col-span-2 space-y-4">
-            <Link to="/" className="flex items-center gap-2">
+            <Link onClick={scrollToTop} to="/" className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-primary-light flex items-center justify-center">
                 <Flame className="w-5 h-5 text-white" />
               </div>
@@ -66,7 +70,7 @@ export function Footer() {
               <ul className="space-y-2.5">
                 {links.map(link => (
                   <li key={link.label}>
-                    <Link to={link.to} className="text-sm text-text-muted hover:text-text-secondary transition-colors">
+                    <Link onClick={scrollToTop} to={link.to} className="text-sm text-text-muted hover:text-text-secondary transition-colors">
                       {link.label}
                     </Link>
                   </li>
@@ -80,7 +84,7 @@ export function Footer() {
           <p className="text-xs text-text-muted">© 2026 FundBlaze Inc. All rights reserved.</p>
           <div className="flex items-center gap-4">
             {bottomLinks.map(item => (
-              <Link key={item.label} to={item.to} className="text-xs text-text-muted hover:text-text-secondary transition-colors">
+              <Link onClick={scrollToTop} key={item.label} to={item.to} className="text-xs text-text-muted hover:text-text-secondary transition-colors">
                 {item.label}
               </Link>
             ))}
