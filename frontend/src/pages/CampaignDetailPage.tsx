@@ -276,7 +276,9 @@ export function CampaignDetailPage() {
                 <Link to={`/profile/${campaign.creator.username}`}>
                   <Button variant="ghost" fullWidth size="sm">View Profile</Button>
                 </Link>
-                <Button variant="outline" size="sm" fullWidth>Contact</Button>
+                <a href={`mailto:${campaign.creator.contactEmail || `${campaign.creator.username}@fundblaze.com`}?subject=Contact Creator: ${campaign.creator.name} (@${campaign.creator.username})&body=Regarding the campaign "${campaign.title}"...%0D%0A%0D%0AMy message:%0D%0A`} className="w-full">
+                  <Button variant="outline" size="sm" fullWidth>Contact</Button>
+                </a>
               </div>
             </div>
 

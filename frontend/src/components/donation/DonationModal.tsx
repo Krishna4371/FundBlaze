@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Heart, Check, Lock, AlertCircle, ShieldCheck } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
@@ -24,6 +25,7 @@ const IS_MOCK_MODE =
   (import.meta.env.VITE_RAZORPAY_KEY_ID as string).includes('XXXX')
 
 export function DonationModal({ campaignId, campaignTitle, isOpen, onClose }: DonationModalProps) {
+  const qc = useQueryClient()
   const [amount,          setAmount]          = useState<number | ''>(500)
   const [customAmount,    setCustomAmount]    = useState('')
   const [isCustom,        setIsCustom]        = useState(false)
@@ -111,6 +113,12 @@ export function DonationModal({ campaignId, campaignTitle, isOpen, onClose }: Do
         message: message.trim(),
         anonymous,
       })
+      
+      // Invalidate relevant queries so the UI updates
+      qc.invalidateQueries({ queryKey: ['campaigns'] })
+      qc.invalidateQueries({ queryKey: ['donations', campaignId] })
+      qc.invalidateQueries({ queryKey: ['my-stats'] })
+
       setMockRzpOpen(false)
       toastSuccess(`Thank you! ${formatCurrency(finalAmount)} donated successfully.`)
       setSuccess(true)

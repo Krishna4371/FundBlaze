@@ -19,9 +19,10 @@ export const mockCampaigns: Campaign[] = [
     location: 'Rajasthan, India',
     isFeatured: true,
     creator: {
-      id: 'c1',
+      id: 'u1',
       name: 'Aarav Sharma',
       username: 'aarav_sharma',
+      contactEmail: 'contact@aaravsharma.com',
       avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80',
       bio: 'Renewable energy engineer with 10 years of field experience across rural India.',
       verified: true,
@@ -57,7 +58,7 @@ export const mockCampaigns: Campaign[] = [
     location: 'Odisha, India',
     isFeatured: true,
     creator: {
-      id: 'c2',
+      id: 'u2',
       name: 'Priya Patel',
       username: 'priya_patel',
       avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&q=80',
@@ -91,7 +92,7 @@ export const mockCampaigns: Campaign[] = [
     minDonation: 200,
     location: 'Mumbai, Maharashtra',
     creator: {
-      id: 'c3',
+      id: 'u3',
       name: 'Vikram Singh',
       username: 'vikram_arts',
       avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&q=80',
@@ -127,7 +128,7 @@ export const mockCampaigns: Campaign[] = [
     location: 'Rayagada, Odisha',
     isFeatured: true,
     creator: {
-      id: 'c4',
+      id: 'u4',
       name: 'Dr. Aris Varma',
       username: 'dr_aris_varma',
       avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&q=80',

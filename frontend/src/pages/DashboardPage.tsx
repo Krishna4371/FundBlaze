@@ -39,6 +39,7 @@ const statusVariant: Record<string, 'success' | 'warning' | 'default' | 'gold'> 
 
 const profileSchema = z.object({
   name: z.string().min(2, 'At least 2 characters'),
+  contactEmail: z.string().email('Invalid email address').or(z.literal('').transform(() => undefined)).optional(),
   bio: z.string().max(500).optional(),
   socialLinks: z.object({
     twitter: z.string().optional(),
@@ -159,6 +160,7 @@ export function DashboardPage() {
       resolver: zodResolver(profileSchema),
       defaultValues: {
         name: user?.name ?? '',
+        contactEmail: user?.contactEmail ?? '',
         bio: user?.bio ?? '',
         socialLinks: { twitter: user?.socialLinks?.twitter ?? '', linkedin: user?.socialLinks?.linkedin ?? '', website: user?.socialLinks?.website ?? '' },
       },
@@ -695,6 +697,15 @@ export function DashboardPage() {
                     className="w-full px-4 py-2.5 rounded-xl bg-bg-elevated border border-white/8 text-white text-sm focus:outline-none focus:border-primary/50"
                   />
                   {peErrors.name && <p className="text-xs text-error mt-1">{peErrors.name.message}</p>}
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-text-secondary block mb-1.5">Contact Email</label>
+                  <input
+                    {...regProfile('contactEmail')}
+                    placeholder="E.g. support@example.com (optional)"
+                    className="w-full px-4 py-2.5 rounded-xl bg-bg-elevated border border-white/8 text-white text-sm focus:outline-none focus:border-primary/50"
+                  />
+                  {peErrors.contactEmail && <p className="text-xs text-error mt-1">{peErrors.contactEmail.message}</p>}
                 </div>
                 <div>
                   <label className="text-sm font-medium text-text-secondary block mb-1.5">Bio</label>

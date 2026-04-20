@@ -5,6 +5,7 @@ export interface User {
   name: string
   username: string
   email: string
+  contactEmail?: string
   avatar?: string
   bio?: string
   role: UserRole

@@ -12,6 +12,7 @@ export interface Creator {
   id: string
   name: string
   username: string
+  contactEmail?: string
   avatar: string
   bio: string
   verified: boolean

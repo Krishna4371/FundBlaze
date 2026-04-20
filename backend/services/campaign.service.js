@@ -3,7 +3,7 @@ const User     = require('../models/User');
 const { AppError }          = require('../middlewares/error.middleware');
 const { paginatedResponse } = require('../utils/response.utils');
 
-const CREATOR_SELECT = 'name username avatar bio verified stats createdAt';
+const CREATOR_SELECT = 'name username avatar bio verified stats createdAt contactEmail';
 
 const _norm = (c) => {
   c.id = (c._id||c.id).toString(); delete c._id;

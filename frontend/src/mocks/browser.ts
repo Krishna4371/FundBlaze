@@ -11,8 +11,8 @@ type StoredDonation = typeof mockDonations[0] & { userId?: string }
 // ── Persistent mock state ──────────────────────────────────────────────────────
 // Stored in localStorage so mutations survive page reloads, new tabs, and
 // account switches. Each key is prefixed so it doesn't clash with app data.
-const STORAGE_KEY_CAMPAIGNS = 'mock_campaigns'
-const STORAGE_KEY_DONATIONS  = 'mock_donations'
+const STORAGE_KEY_CAMPAIGNS = 'mock_campaigns_v2'
+const STORAGE_KEY_DONATIONS  = 'mock_donations_v2'
 
 function loadCampaigns(): Campaign[] {
   try {
@@ -39,7 +39,7 @@ function saveDonations() {
 }
 
 // ── Persisted user overrides (profile edits) ───────────────────────────────
-const STORAGE_KEY_USERS = 'mock_users'
+const STORAGE_KEY_USERS = 'mock_users_v2'
 type UserOverrides = Record<string, Partial<typeof mockUsers[0]>>
 
 function loadUserOverrides(): UserOverrides {

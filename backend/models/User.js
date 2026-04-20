@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema({
               match:[/^[a-z0-9_]{3,30}$/,'Username: 3-30 chars, a-z 0-9 _'] },
   email:    { type:String, required:true, unique:true, lowercase:true, trim:true,
               match:[/^\S+@\S+\.\S+$/,'Invalid email'] },
+  contactEmail: { type:String, lowercase:true, trim:true, default:'' },
   password: { type:String, required:true, minlength:8, select:false },
   role:     { type:String, enum:['guest','donor','creator','admin'], default:'donor' },
   avatar:   { type:String, default:null },
